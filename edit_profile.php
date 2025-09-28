@@ -17,6 +17,7 @@ $users = [];
 
 if (file_exists($users_file)) {
     $lines = file($users_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    
     foreach ($lines as $line) {
         $data = json_decode($line, true);
         if (is_array($data) && isset($data['email'], $data['password'])) {
@@ -42,12 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($current_password)) {
         $message = 'empty password';
     }
+    
     elseif (!password_verify($current_password, $current_user['password'])) {
         $message = 'Wrong current password';
     }
+    
     elseif ($new_email && !filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
         $message = 'invalide email';
     }
+    
     elseif ($new_email && $new_email !== $user_email) {
         $email_taken = false;
         foreach ($users as $u) {
@@ -60,9 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = 'that emal taken';
         }
     }
+    
     elseif ($new_password && strlen($new_password) < 6) {
         $messege = 'Password must be at least 6 characters long';
     }
+    
     elseif ($new_password && $new_password !== $confirm_new_password) {
         $messege = 'Passwords don\'t match';
     }
@@ -76,11 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $user_email = $new_email;
         }
 
+        if ($new_password) {
+            $update_user['password'] = password_hash($new_password, PASSWORD_DEFAULT);
+        }
+
         $new_content = '';
         foreach ($users as $u) {
             if ($u['email'] === $current_user['email']) {
                 $new_content .= json_encode($update_user) . PHP_EOL;
             }
+            
             else {
                 $new_content .= json_encode($update_user) . PHP_EOL;
             }
