@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 $message = '';
 $userName = '';
 $email = '';
@@ -63,10 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
 
             file_put_contents($user_file, json_encode($new_user) . PHP_EOL, FILE_APPEND | LOCK_EX);
-            $message = '<p style="color: green;">Registration was successful!</p>';
+            
+            $_SESSION['user_email'] = $email;
 
-            $userName = '';
-            $email = '';
+            header('Location: profile.php');
+            exit();
         }
     }
 }
