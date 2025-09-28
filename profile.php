@@ -39,7 +39,7 @@ if (!$user) {
     <div>
         <h2>Welcom, <?=$user['userName']?></h2>
         <p>Email: <?=$user['email']?></p>
-        <a href="edit_profile.php">Edit profile</a>
+        <a href="edit_profile.php?email=<?= urlencode($user['email']) ?>">Edit profile</a>
         <a href = "index.php">Exit</a>
     </div>
 </body>
