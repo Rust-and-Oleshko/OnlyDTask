@@ -35,77 +35,108 @@ if (!$current_user) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $current_password = $_POST['current_password'];
-    $new_password = $_POST['new_password'];
-    $confirm_new_password = $_POST['confirm_new_password'];
-    $new_email = trim($_POST['new_email'] ?? '');
-    $new_name = $_POST['new_name'];
+    
+    if (isset($_POST['delete_account'])) {
+        $delete_password = $_POST['delete_password'];
 
-    if (empty($current_password)) {
-        $message = 'empty password';
-    }
-    
-    elseif (!password_verify($current_password, $current_user['password'])) {
-        $message = 'Wrong current password';
-    }
-    
-    elseif ($new_email && !filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
-        $message = 'invalide email';
-    }
-    
-    elseif ($new_email && $new_email !== $user_email) {
-        $email_taken = false;
-        foreach ($users as $u) {
-            if ($u['email'] == $new_email) {
-                $email_taken = true;
-                break;
-            }
-        }
-        if ($email_taken) {
-            $message = 'that emal taken';
-        }
-    }
-    
-    elseif ($new_password && strlen($new_password) < 6) {
-        $message = 'Password must be at least 6 characters long';
-    }
-    
-    elseif ($new_password && $new_password !== $confirm_new_password) {
-        $message = 'Passwords don\'t match';
-    }
+        if (empty($delete_password)) {
+            $message = 'Enter your password for delete account';
+        } 
 
-    if (!$message) {
-        $update_user = $current_user;
-        $old_email = $current_user['email'];
-
-        if ($new_email && $new_email !== $old_email) {
-            $update_user['email'] = $new_email;
-            $_SESSION['user_email'] = $new_email;
-            $user_email = $new_email;
+        elseif (!password_verify($delete_password, $current_user['password'])) {
+            $message = 'inccorect password';
         }
 
-        if ($new_password) {
-            $update_user['password'] = password_hash($new_password, PASSWORD_DEFAULT);
-        }
-
-        if ($new_name) {
-            $update_user['userName'] = $new_name;
-        }
-
-        $new_content = '';
-        foreach ($users as $u) {
-            if ($u['email'] === $old_email) {
-                $new_content .= json_encode($update_user) . PHP_EOL;
-            }
+        else {
             
-            else {
-                $new_content .= json_encode($u) . PHP_EOL;
+            $new_content = '';
+            foreach ($users as $u) {
+                if ($u['email'] !== $user_email) {
+                    $new_content .= json_encode($u) . PHP_EOL;
+                }
+            }
+
+            file_put_contents($users_file, $new_content, LOCK_EX);
+
+            session_destroy();
+
+            header('Location: index.php?message=Account+deleted');
+            exit();
+        }
+    }
+    else {
+        $current_password = $_POST['current_password'];
+        $new_password = $_POST['new_password'];
+        $confirm_new_password = $_POST['confirm_new_password'];
+        $new_email = trim($_POST['new_email'] ?? '');
+        $new_name = $_POST['new_name'];
+
+        if (empty($current_password)) {
+            $message = 'empty password';
+        }
+        
+        elseif (!password_verify($current_password, $current_user['password'])) {
+            $message = 'Wrong current password';
+        }
+        
+        elseif ($new_email && !filter_var($new_email, FILTER_VALIDATE_EMAIL)) {
+            $message = 'invalide email';
+        }
+        
+        elseif ($new_email && $new_email !== $user_email) {
+            $email_taken = false;
+            foreach ($users as $u) {
+                if ($u['email'] == $new_email) {
+                    $email_taken = true;
+                    break;
+                }
+            }
+            if ($email_taken) {
+                $message = 'that emal taken';
             }
         }
+        
+        elseif ($new_password && strlen($new_password) < 6) {
+            $message = 'Password must be at least 6 characters long';
+        }
+        
+        elseif ($new_password && $new_password !== $confirm_new_password) {
+            $message = 'Passwords don\'t match';
+        }
 
-        file_put_contents($users_file, $new_content, LOCK_EX);
-        $message = 'Profile updated successfully';
-        $current_user = $update_user;
+        if (!$message) {
+            $update_user = $current_user;
+            $old_email = $current_user['email'];
+
+            if ($new_email && $new_email !== $old_email) {
+                $update_user['email'] = $new_email;
+                $_SESSION['user_email'] = $new_email;
+                $user_email = $new_email;
+            }
+
+            if ($new_password) {
+                $update_user['password'] = password_hash($new_password, PASSWORD_DEFAULT);
+            }
+
+            if ($new_name) {
+                $update_user['userName'] = $new_name;
+            }
+
+            $new_content = '';
+            foreach ($users as $u) {
+                if ($u['email'] === $old_email) {
+                    $new_content .= json_encode($update_user) . PHP_EOL;
+                }
+                
+                else {
+                    $new_content .= json_encode($u) . PHP_EOL;
+                }
+            }
+
+            file_put_contents($users_file, $new_content, LOCK_EX);
+            $message = 'Profile updated successfully';
+            $current_user = $update_user;
+        }
     }
 }
 
@@ -143,6 +174,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="text" name="new_name">
 
         <button type="submit">Save Changes</button>
+    </form>
+
+    <hr>
+    
+    <h2>Deleted account</h2>
+
+    <form method="POST" >
+        <label for="deleted_password">Enter your password</label>
+        <input type="password" name="delete_password" >
+        <input type="hidden" name="delete_account" value="1">
+        <button type="submit">Delete account</button>
     </form>
 
     <a href="profile.php">Back</a>

@@ -26,6 +26,17 @@ if (!$user) {
     session_destroy();
     die('User not found');
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    if (isset($_POST['exit_account'])) {
+        
+        session_destroy();
+
+        header('Location: index.php?message=Account+exit');
+        exit();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +51,10 @@ if (!$user) {
         <h2>Welcom, <?=$user['userName']?></h2>
         <p>Email: <?=$user['email']?></p>
         <a href="edit_profile.php?email=<?= urlencode($user['email']) ?>">Edit profile</a>
-        <a href = "index.php">Exit</a>
+        <form method="POST">
+            <button type="submit" >Exit account</button>
+            <input type="hidden" name="exit_account" value="1">
+        </form>
     </div>
 </body>
 </html>
