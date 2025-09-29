@@ -66,17 +66,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     
     elseif ($new_password && strlen($new_password) < 6) {
-        $messege = 'Password must be at least 6 characters long';
+        $message = 'Password must be at least 6 characters long';
     }
     
     elseif ($new_password && $new_password !== $confirm_new_password) {
-        $messege = 'Passwords don\'t match';
+        $message = 'Passwords don\'t match';
     }
 
     if (!$message) {
         $update_user = $current_user;
+        $old_email = $current_user['email'];
 
-        if ($new_email && $new_email !== $user_email) {
+        if ($new_email && $new_email !== $old_email) {
             $update_user['email'] = $new_email;
             $_SESSION['user_email'] = $new_email;
             $user_email = $new_email;
@@ -88,12 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $new_content = '';
         foreach ($users as $u) {
-            if ($u['email'] === $current_user['email']) {
+            if ($u['email'] === $old_email) {
                 $new_content .= json_encode($update_user) . PHP_EOL;
             }
             
             else {
-                $new_content .= json_encode($update_user) . PHP_EOL;
+                $new_content .= json_encode($u) . PHP_EOL;
             }
         }
 
