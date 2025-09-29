@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $new_password = $_POST['new_password'];
     $confirm_new_password = $_POST['confirm_new_password'];
     $new_email = trim($_POST['new_email'] ?? '');
+    $new_name = $_POST['new_name'];
 
     if (empty($current_password)) {
         $message = 'empty password';
@@ -87,6 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $update_user['password'] = password_hash($new_password, PASSWORD_DEFAULT);
         }
 
+        if ($new_name) {
+            $update_user['userName'] = $new_name;
+        }
+
         $new_content = '';
         foreach ($users as $u) {
             if ($u['email'] === $old_email) {
@@ -133,6 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <label >Repest new password</label>
         <input type="password" name="confirm_new_password" id="">
+
+        <label>New name</label>
+        <input type="text" name="new_name">
 
         <button type="submit">Save Changes</button>
     </form>

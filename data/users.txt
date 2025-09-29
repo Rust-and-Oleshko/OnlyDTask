@@ -1,2 +1,2 @@
 {"userName":"asdasddd","email":"aeeesdasddd@gmail.com","password":"$2y$10$QhaYEWyTAuUA..MDVt6u8es9DPoFuFlhdD3Fkdcg4OsZnyOn2CBhO"}
-{"userName":"ewqqwe","email":"eeeewqqwe@gmail.com","password":"$2y$10$7EZBzD9wR9cb8oLklSjsEuFRkrJpMx7W0kPbwwM.Mt0gpFYDd6uWi"}
+{"userName":"qweqwe","email":"eeeewqqwe@gmail.com","password":"$2y$10$7EZBzD9wR9cb8oLklSjsEuFRkrJpMx7W0kPbwwM.Mt0gpFYDd6uWi","name":"qweqwe"}
