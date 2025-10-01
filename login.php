@@ -72,7 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h2>Welcom to login!</h2>
     <form method="post">
+        <p>Email</p>
         <input type="email" name="email" id="">
+        <p>password</p>
         <input type="password" name="password" id="">
         <button type="submit">Login</button>
     </form>
